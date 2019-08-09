@@ -122,7 +122,7 @@ export class Chats {
     messages: any[];
   }> {
     const query = sql`SELECT * FROM messages`;
-    query.append(` WHERE chat_id = ${chatId}`);
+    query.append(` WHERE chat_id = '${chatId}'`);
 
     if (after) {
       // the created_at is the cursor
@@ -202,17 +202,19 @@ export class Chats {
   }
 
   async addMessage({
+    id,
     chatId,
     userId,
     content,
   }: {
+    id: string;
     chatId: string;
     userId: string;
     content: string;
   }) {
     const { rows } = await this.db.query(sql`
-      INSERT INTO messages(chat_id, sender_user_id, content)
-      VALUES(${chatId}, ${userId}, ${content})
+      INSERT INTO messages(id, chat_id, sender_user_id, content)
+      VALUES(${id}, ${chatId}, ${userId}, ${content})
       RETURNING *
     `);
 
@@ -226,9 +228,11 @@ export class Chats {
   }
 
   async addChat({
+    id,
     userId,
     recipientId,
   }: {
+    id: string;
     userId: string;
     recipientId: string;
   }) {
@@ -248,8 +252,8 @@ export class Chats {
       await this.db.query('BEGIN');
 
       const { rows } = await this.db.query(sql`
-        INSERT INTO chats
-        DEFAULT VALUES
+        INSERT INTO chats(id)
+        VALUES(${id})
         RETURNING *
       `);
 

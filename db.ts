@@ -43,7 +43,7 @@ export async function initDb(): Promise<void> {
 
   // Create tables
   await pool.query(sql`CREATE TABLE chats(
-    id SERIAL PRIMARY KEY
+    id VARCHAR (36) PRIMARY KEY
   );`);
   await pool.query(sql`CREATE TABLE users(
     id SERIAL PRIMARY KEY,
@@ -53,15 +53,15 @@ export async function initDb(): Promise<void> {
     picture VARCHAR (255) NOT NULL
   );`);
   await pool.query(sql`CREATE TABLE chats_users(
-    chat_id INTEGER NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
+    chat_id VARCHAR (36) NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
   );`);
 
   await pool.query(sql`CREATE TABLE messages(
-    id SERIAL PRIMARY KEY,
+    id VARCHAR (36) PRIMARY KEY,
     content VARCHAR (355) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    chat_id INTEGER NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
+    chat_id VARCHAR (36) NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
     sender_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
   );`);
 
@@ -153,9 +153,9 @@ export const resetDb = async () => {
     `);
   }
 
-  await pool.query(
+  /*await pool.query(
     sql`SELECT setval('chats_id_seq', (SELECT max(id) FROM chats))`
-  );
+  );*/
 
   await pool.query(sql`DELETE FROM chats_users`);
 
@@ -249,9 +249,9 @@ export const resetDb = async () => {
     `);
   }
 
-  await pool.query(
+  /*await pool.query(
     sql`SELECT setval('messages_id_seq', (SELECT max(id) FROM messages))`
-  );
+  );*/
 };
 
 function addFakedMessages(messages: Message[], count: number) {

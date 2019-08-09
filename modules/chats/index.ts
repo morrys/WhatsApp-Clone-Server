@@ -42,8 +42,8 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    addMessage(chatId: ID!, content: String!): Message
-    addChat(recipientId: ID!): Chat
+    addMessage(id: ID!, chatId: ID!, content: String!): Message
+    addChat(id: ID!, recipientId: ID!): Chat
     removeChat(chatId: ID!): ID
   }
 
@@ -148,24 +148,24 @@ const resolvers: Resolvers = {
   },
 
   Mutation: {
-    async addMessage(root, { chatId, content }, { injector }) {
+    async addMessage(root, { id, chatId, content }, { injector }) {
       const currentUser = await injector.get(Auth).currentUser();
 
       if (!currentUser) return null;
 
       return injector
         .get(Chats)
-        .addMessage({ chatId, content, userId: currentUser.id });
+        .addMessage({ id, chatId, content, userId: currentUser.id });
     },
 
-    async addChat(root, { recipientId }, { injector }) {
+    async addChat(root, { id, recipientId }, { injector }) {
       const currentUser = await injector.get(Auth).currentUser();
 
       if (!currentUser) return null;
 
       return injector
         .get(Chats)
-        .addChat({ recipientId, userId: currentUser.id });
+        .addChat({ id, recipientId, userId: currentUser.id });
     },
 
     async removeChat(root, { chatId }, { injector }) {
