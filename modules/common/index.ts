@@ -2,15 +2,16 @@ import { GraphQLModule } from '@graphql-modules/core';
 import { ProviderScope } from '@graphql-modules/di';
 import { gql } from 'apollo-server-express';
 import { GraphQLDateTime } from 'graphql-iso-date';
-import { Pool } from 'pg';
+import { Pool, Client } from 'pg';
 import { pool } from '../../db';
 import { Resolvers } from '../../types/graphql';
 import { Database } from './database.provider';
 import { PubSub } from './pubsub.provider';
+import { compile } from '../../env';
 
 const { PostgresPubSub } = require('graphql-postgres-subscriptions');
 
-const typeDefs = gql`
+export const typeDefs = gql`
   scalar DateTime
 
   type Query {
@@ -36,6 +37,7 @@ const pubsub = new PostgresPubSub({
   user: 'testuser',
   password: 'testpassword',
   database: 'whatsapp',
+  client: compile ? new Client() : undefined
 });
 
 export default new GraphQLModule({
